@@ -79,7 +79,7 @@ export async function POST(request: Request) {
 
     if (!assistantMsg || !assistantMsg.content.length) {
       return NextResponse.json(
-        { error: "No assistant response found" },
+        { error: "No response found" },
         { status: 500 },
       );
     }
@@ -87,7 +87,7 @@ export async function POST(request: Request) {
     const firstPart = assistantMsg.content[0];
     if (firstPart.type !== "text") {
       return NextResponse.json(
-        { error: "Unexpected assistant content type" },
+        { error: "Unexpected response content type" },
         { status: 500 },
       );
     }
@@ -99,7 +99,7 @@ export async function POST(request: Request) {
       parsed = JSON.parse(raw);
     } catch (e: any) {
       return NextResponse.json(
-        { error: "Failed to parse JSON from assistant", raw },
+        { error: "Failed to parse JSON from model", raw },
         { status: 500 },
       );
     }

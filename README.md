@@ -1,31 +1,16 @@
-# Meeting Recap Assistant (Upgraded + Language toggle)
+# Meeting Recap Assistant (UX polished + language toggle)
 
-This is an upgraded Next.js 14 app that exposes an API route backed by your OpenAI Assistant
-and a richer UI for users to paste or upload meeting transcripts and choose:
+This version includes:
 
-- Notes only
-- Notes + audio file
+- Language selector (English / Svenska) that controls the language of the notes & audio.
+- Cleaner, more structured layout.
+- Clear copy: users just choose mode + language, no mention of underlying tech.
+- Dark/light theme toggle.
+- File upload for `.txt` / `.md` transcripts.
+- Local history per browser.
+- "Download ZIP" with `meeting_notes.md` and optional `meeting_recap.mp3`.
 
-New extras in this version:
-- Language toggle: English / Swedish. The choice is sent as a hint along with the transcript.
-- Nicer UI with light / dark mode toggle
-- File upload for plain text files (`.txt`, `.md`)
-- Local history stored in the browser (no backend persistence)
-- "Download ZIP" button to download notes (`meeting_notes.md`) and audio (`meeting_recap.mp3`) as a single archive
+Environment variables for Vercel:
 
-## Environment variables
-
-Set these in Vercel (Project Settings → Environment Variables):
-
-- `OPENAI_API_KEY` – your OpenAI API key
-- `OPENAI_ASSISTANT_ID` – the ID of your Assistant
-  (for example: asst_13JyEdidVQ3kDqrldYHU2559)
-
-## Running locally
-
-```bash
-npm install
-npm run dev
-```
-
-Then open http://localhost:3000 in your browser.
+- `OPENAI_API_KEY`
+- `OPENAI_ASSISTANT_ID`
