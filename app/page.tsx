@@ -26,6 +26,7 @@ const THEME_KEY = "meetingRecapTheme";
 export default function Page() {
   const [mode, setMode] = useState<Mode>("notes");
   const [language, setLanguage] = useState<Language>("en");
+  const [meetingTitle, setMeetingTitle] = useState("");
   const [transcript, setTranscript] = useState("");
   const [loading, setLoading] = useState(false);
   const [notes, setNotes] = useState("");
@@ -38,7 +39,8 @@ export default function Page() {
   useEffect(() => {
     if (typeof window === "undefined") return;
 
-    const storedTheme = (window.localStorage.getItem(THEME_KEY) as "light" | "dark" | null) || "dark";
+    const storedTheme =
+      (window.localStorage.getItem(THEME_KEY) as "light" | "dark" | null) || "dark";
     setTheme(storedTheme);
     document.body.classList.toggle("light", storedTheme === "light");
 
@@ -136,17 +138,36 @@ export default function Page() {
     }
 
     const zip = new JSZip();
-    zip.file("meeting_notes.md", notes);
 
+    // YYYY-MM-DD
+    const today = new Date().toISOString().slice(0, 10);
+
+    // Clean title: letters/numbers only, everything else -> "_"
+    const safeTitle = meetingTitle
+      ? meetingTitle.replace(/[^a-z0-9]+/gi, "_").replace(/^_+|_+$/g, "")
+      : "meeting_recap";
+
+    // Build markdown content:
+    // If meetingTitle is present, prepend H1 heading.
+    const notesContent = meetingTitle
+      ? `# ${meetingTitle}\n\n${notes}`
+      : notes;
+
+    const notesFileName = `${today}_${safeTitle}.md`;
+    zip.file(notesFileName, notesContent);
+
+    // Only include audio file if it exists (i.e., notes+audio was generated)
     if (audioBlob) {
-      zip.file("meeting_recap.mp3", audioBlob);
+      const audioFileName = `${today}_${safeTitle}.mp3`;
+      zip.file(audioFileName, audioBlob);
     }
 
     const blob = await zip.generateAsync({ type: "blob" });
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = url;
-    a.download = "meeting_recap_bundle.zip";
+    const zipName = `${today}_${safeTitle}.zip`;
+    a.download = zipName;
     document.body.appendChild(a);
     a.click();
     a.remove();
@@ -254,6 +275,30 @@ export default function Page() {
                 EN = English, SE = Swedish (Svenska).
               </p>
             </div>
+          </div>
+
+          {/* Meeting title */}
+          <div style={{ marginBottom: 12 }}>
+            <label style={{ display: "block", marginBottom: 4 }}>
+              Meeting title (optional)
+            </label>
+            <input
+              type="text"
+              placeholder="e.g. Weekly sync with team"
+              value={meetingTitle}
+              onChange={(e) => setMeetingTitle(e.target.value)}
+              style={{
+                width: "100%",
+                padding: "8px 10px",
+                borderRadius: 10,
+                border: "1px solid var(--border)",
+                background: "var(--surface-alt)",
+                color: "var(--fg)",
+              }}
+            />
+            <p className="muted" style={{ marginTop: 4 }}>
+              Used for naming the downloaded notes and audio files together with today&apos;s date.
+            </p>
           </div>
 
           <div style={{ marginBottom: 12 }}>
